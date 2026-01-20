@@ -125,3 +125,4 @@ task.spawn(function()
 end)
 
 print("✅ AUTO GIFT + PET COUNTER LOADED")
+
