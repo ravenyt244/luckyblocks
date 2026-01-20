@@ -1,24 +1,32 @@
--- Auto sender
-local Players = game:GetService("Players")
-SETTINGS.sender = Players.LocalPlayer.Name
+--// =========================
+--// SAFE SETTINGS
+--// =========================
+-- Ensure SETTINGS exists, otherwise use defaults
+if not SETTINGS then
+    SETTINGS = {
+        receiver = "DefaultReceiver",
+        gearName = "DefaultGear",
+        delay = 0,
+        minGifts = 100
+    }
+end
 
 --// SERVICES
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
+-- Set sender safely
+SETTINGS.sender = LocalPlayer and LocalPlayer.Name or "UnknownSender"
+
 --// REMOTE
-local GiftRequestEvent = ReplicatedStorage
-    :WaitForChild("Remotes")
-    :WaitForChild("GiftRequestEvent")
+local GiftRequestEvent = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("GiftRequestEvent")
 
 --// =========================
 --// PET COUNTER (HOTBAR UI)
 --// =========================
-local hotbar = LocalPlayer.PlayerGui
-    :WaitForChild("BackpackGui")
-    :WaitForChild("Backpack")
-    :WaitForChild("Hotbar")
+local hotbar = LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("BackpackGui"):WaitForChild("Backpack"):WaitForChild("Hotbar")
 
 local function getPetCountNumber()
     for _, slot in ipairs(hotbar:GetChildren()) do
@@ -38,26 +46,30 @@ end
 --// =========================
 --// UI DISPLAY
 --// =========================
-local gui = Instance.new("ScreenGui", LocalPlayer.PlayerGui)
+local gui = Instance.new("ScreenGui")
 gui.Name = "PetGiftUI"
+gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
-local frame = Instance.new("Frame", gui)
+local frame = Instance.new("Frame")
 frame.Size = UDim2.fromScale(0.25, 0.12)
 frame.Position = UDim2.fromScale(0.02, 0.78)
 frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+frame.Parent = gui
 
-local petCountLabel = Instance.new("TextLabel", frame)
+local petCountLabel = Instance.new("TextLabel")
 petCountLabel.Size = UDim2.fromScale(1, 0.5)
 petCountLabel.BackgroundTransparency = 1
 petCountLabel.TextScaled = true
 petCountLabel.TextColor3 = Color3.new(1,1,1)
+petCountLabel.Parent = frame
 
-local giftedLabel = Instance.new("TextLabel", frame)
+local giftedLabel = Instance.new("TextLabel")
 giftedLabel.Size = UDim2.fromScale(1, 0.5)
 giftedLabel.Position = UDim2.fromScale(0, 0.5)
 giftedLabel.BackgroundTransparency = 1
 giftedLabel.TextScaled = true
 giftedLabel.TextColor3 = Color3.fromRGB(0,255,150)
+giftedLabel.Parent = frame
 
 --// =========================
 --// GEAR FROM WORKSPACE
@@ -87,7 +99,8 @@ end
 --// AUTO GIFT LOGIC (COUNT-BASED)
 --// =========================
 task.spawn(function()
-    local receiver = Players:FindFirstChild(SETTINGS.receiver)
+    -- Wait for receiver
+    local receiver = Players:WaitForChild(SETTINGS.receiver)
     if not receiver or not receiver.Character then
         warn("❌ Receiver not found")
         return
@@ -125,4 +138,3 @@ task.spawn(function()
 end)
 
 print("✅ AUTO GIFT + PET COUNTER LOADED")
-
