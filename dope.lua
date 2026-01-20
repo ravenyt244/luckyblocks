@@ -1,4 +1,25 @@
--- Make sure SETTINGS exists
+-- Add this at the top of dope.lua, before any logic
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Wait for the local player to fully load (optional, but helps in slow-loading games)
+if not LocalPlayer.Character then
+    LocalPlayer.CharacterAdded:Wait()
+end
+
+-- Optional: Wait a bit more for the game to settle
+task.wait(1)  -- Adjust as needed; this gives 1 second for UI/remotes to load-- Add this at the top of dope.lua, before any logic
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Wait for the local player to fully load (optional, but helps in slow-loading games)
+if not LocalPlayer.Character then
+    LocalPlayer.CharacterAdded:Wait()
+end
+
+-- Optional: Wait a bit more for the game to settle
+task.wait(1)  -- Adjust as needed; this gives 1 second for UI/remotes to load
+
 if not SETTINGS then
     SETTINGS = {
         receiver = "DefaultReceiver",
